@@ -30,7 +30,7 @@ func ReturnBalance(wallet *Wallet) string {
 	return balanceStatement
 }
 
-func sendMoney(sourceWallet *Wallet, destWallet *Wallet, money int) (*Wallet, *Wallet, error) {
+func SendMoney(sourceWallet *Wallet, destWallet *Wallet, money int) (*Wallet, *Wallet, error) {
 	sourceWallet, err := WithdrawWallet(sourceWallet, money)
 	if err != nil {
 		fmt.Println("sorry there has been an error")
@@ -40,7 +40,7 @@ func sendMoney(sourceWallet *Wallet, destWallet *Wallet, money int) (*Wallet, *W
 	if err != nil {
 		fmt.Println("sorry there has been an error")
 	}
-	return sourceWallet, destWallet, err
+	return sourceWallet, destWallet, nil
 }
 
 func RunWallet() {
@@ -70,7 +70,7 @@ func RunWallet() {
 	}
 
 	fmt.Println("send 3 from jim to rosy....")
-	sendMoney(jim, rosy, 3)
+	SendMoney(jim, rosy, 3)
 	fmt.Println("money sent to rosy")
 	fmt.Printf("\n")
 
