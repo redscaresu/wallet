@@ -1,6 +1,7 @@
 package wallet
 
 import (
+	"errors"
 	"fmt"
 	"os"
 )
@@ -29,24 +30,32 @@ func DepositWallet(wallet *Wallet, money int) (*Wallet, error) {
 }
 
 func WithdrawWallet(wallet *Wallet, money int) (*Wallet, error) {
+
+	oldBalance := wallet.Balance
 	wallet.Balance -= money
+	if wallet.Balance >= oldBalance {
+		return nil, fmt.Errorf("new balance %v is not less than the old balance %v", wallet.Balance, oldBalance)
+	}
 	return wallet, nil
 }
 
-func ReturnBalance(wallet *Wallet) string {
+func (wallet *Wallet) ReturnBalance() (string, error) {
 	balanceStatement := fmt.Sprintf("hello %s, your balance is %v \n", wallet.Name, wallet.Balance)
-	return balanceStatement
+	if balanceStatement == "" {
+		return "", errors.New("unable to return the balance")
+	}
+	return balanceStatement, nil
 }
 
 func SendMoney(sourceWallet *Wallet, destWallet *Wallet, money int) (*Wallet, *Wallet, error) {
 	sourceWallet, err := WithdrawWallet(sourceWallet, money)
 	if err != nil {
-		fmt.Println("sorry there has been an error")
+		return sourceWallet, nil, err
 	}
 
 	destWallet, err = DepositWallet(destWallet, money)
 	if err != nil {
-		fmt.Println("sorry there has been an error")
+		return nil, destWallet, err
 	}
 	return sourceWallet, destWallet, nil
 }
@@ -54,25 +63,31 @@ func SendMoney(sourceWallet *Wallet, destWallet *Wallet, money int) (*Wallet, *W
 func RunWallet() {
 	jim, err := CreateWallet("jim")
 	if err != nil {
-		fmt.Printf("sorry there has been an error: %v", err)
+		fmt.Printf("sorry there has been an error: %v \n", err)
 		os.Exit(1)
 	}
 	fmt.Println(jim)
 
 	addCashJim, err := DepositWallet(jim, 5)
 	if err != nil {
-		fmt.Printf("sorry there has been an error: %v", err)
+		fmt.Printf("sorry there has been an error: %v \n", err)
 		os.Exit(1)
 	}
 	fmt.Println(addCashJim)
 
 	withdrawCashJim, err := WithdrawWallet(jim, 1)
 	if err != nil {
-		fmt.Println("sorry there has been an error")
+		fmt.Printf("sorry there has been an error: %v \n", err)
+		os.Exit(1)
 	}
 	fmt.Println(withdrawCashJim)
 
-	fmt.Println(ReturnBalance(jim))
+	balance, err := jim.ReturnBalance()
+	if err != nil {
+		fmt.Printf("sorry there has been an error: %v \n", err)
+		os.Exit(1)
+	}
+	fmt.Println(balance)
 
 	rosy, err := CreateWallet("rosy")
 	if err != nil {
@@ -80,11 +95,23 @@ func RunWallet() {
 	}
 
 	fmt.Println("send 3 from jim to rosy....")
+
 	SendMoney(jim, rosy, 3)
 	fmt.Println("money sent to rosy")
 	fmt.Printf("\n")
 
 	fmt.Println("new balances:")
-	fmt.Println(ReturnBalance(jim))
-	fmt.Println(ReturnBalance(rosy))
+	jimNewBalance, err := jim.ReturnBalance()
+	if err != nil {
+		fmt.Printf("sorry there has been an error: %v \n", err)
+		os.Exit(1)
+	}
+	fmt.Println(jimNewBalance)
+
+	rosyNewBalance, err := rosy.ReturnBalance()
+	if err != nil {
+		fmt.Printf("sorry there has been an error: %v \n", err)
+		os.Exit(1)
+	}
+	fmt.Println(rosyNewBalance)
 }
