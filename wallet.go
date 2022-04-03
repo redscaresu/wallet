@@ -25,8 +25,9 @@ func WithdrawWallet(wallet *Wallet, money int) (*Wallet, error) {
 	return wallet, nil
 }
 
-func returnBalance(wallet *Wallet) {
-	fmt.Printf("hello %s, your balance is %v \n", wallet.Name, wallet.Balance)
+func ReturnBalance(wallet *Wallet) string {
+	balanceStatement := fmt.Sprintf("hello %s, your balance is %v \n", wallet.Name, wallet.Balance)
+	return balanceStatement
 }
 
 func sendMoney(sourceWallet *Wallet, destWallet *Wallet, money int) (*Wallet, *Wallet, error) {
@@ -61,15 +62,19 @@ func RunWallet() {
 	}
 	fmt.Println(withdrawCashJim)
 
-	returnBalance(jim)
+	fmt.Println(ReturnBalance(jim))
 
 	rosy, err := CreateWallet("rosy")
 	if err != nil {
 		fmt.Println("sorry there has been an error")
 	}
 
-	fmt.Println("send 3 to rosy from jim....")
+	fmt.Println("send 3 from jim to rosy....")
 	sendMoney(jim, rosy, 3)
-	returnBalance(jim)
-	returnBalance(rosy)
+	fmt.Println("money sent to rosy")
+	fmt.Printf("\n")
+
+	fmt.Println("new balances:")
+	fmt.Println(ReturnBalance(jim))
+	fmt.Println(ReturnBalance(rosy))
 }
