@@ -66,21 +66,21 @@ func RunWallet() {
 		fmt.Printf("sorry there has been an error: %v \n", err)
 		os.Exit(1)
 	}
-	fmt.Println(jim)
+	fmt.Printf("new wallet created for %s with a balance of %v!\n", jim.Name, jim.Balance)
 
-	addCashJim, err := DepositWallet(jim, 5)
+	_, err = DepositWallet(jim, 5)
+	if err != nil {
+		fmt.Printf("sorry there has been an error: %v\n", err)
+		os.Exit(1)
+	}
+	fmt.Printf("money has been added to %s so now the balance is %v!\n", jim.Name, jim.Balance)
+
+	_, err = WithdrawWallet(jim, 1)
 	if err != nil {
 		fmt.Printf("sorry there has been an error: %v \n", err)
 		os.Exit(1)
 	}
-	fmt.Println(addCashJim)
-
-	withdrawCashJim, err := WithdrawWallet(jim, 1)
-	if err != nil {
-		fmt.Printf("sorry there has been an error: %v \n", err)
-		os.Exit(1)
-	}
-	fmt.Println(withdrawCashJim)
+	fmt.Printf("money has been withdrawn from %s so now the balance is %v!\n", jim.Name, jim.Balance)
 
 	balance, err := jim.ReturnBalance()
 	if err != nil {
