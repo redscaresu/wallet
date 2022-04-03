@@ -2,6 +2,7 @@ package wallet
 
 import (
 	"fmt"
+	"os"
 )
 
 type Wallet struct {
@@ -12,11 +13,18 @@ type Wallet struct {
 func CreateWallet(name string) (*Wallet, error) {
 	wallet := &Wallet{Name: name,
 		Balance: 0}
+	if wallet.Balance != 0 {
+		return nil, fmt.Errorf("wallet balance is %v, should be 0", wallet.Balance)
+	}
 	return wallet, nil
 }
 
 func DepositWallet(wallet *Wallet, money int) (*Wallet, error) {
+	oldBalance := wallet.Balance
 	wallet.Balance += money
+	if wallet.Balance <= oldBalance {
+		return nil, fmt.Errorf("new balance %v is not greater than the old balance %v", wallet.Balance, oldBalance)
+	}
 	return wallet, nil
 }
 
@@ -46,13 +54,15 @@ func SendMoney(sourceWallet *Wallet, destWallet *Wallet, money int) (*Wallet, *W
 func RunWallet() {
 	jim, err := CreateWallet("jim")
 	if err != nil {
-		fmt.Println("sorry there has been an error")
+		fmt.Printf("sorry there has been an error: %v", err)
+		os.Exit(1)
 	}
 	fmt.Println(jim)
 
 	addCashJim, err := DepositWallet(jim, 5)
 	if err != nil {
-		fmt.Println("sorry there has been an error")
+		fmt.Printf("sorry there has been an error: %v", err)
+		os.Exit(1)
 	}
 	fmt.Println(addCashJim)
 
